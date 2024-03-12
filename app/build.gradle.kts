@@ -18,6 +18,17 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+
+        val telegramToken: String? = project.findProperty("telegram.bot.token") as String?
+        val telegramChatId: String? = project.findProperty("telegram.chat.id") as String?
+        buildConfigField("String", "TELEGRAM_BOT_TOKEN", "\"${telegramToken ?: "unknown"}\"")
+        buildConfigField("String", "TELEGRAM_CHAT_ID", "\"${telegramChatId ?: "unknown"}\"")
     }
 
     buildTypes {
@@ -38,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
