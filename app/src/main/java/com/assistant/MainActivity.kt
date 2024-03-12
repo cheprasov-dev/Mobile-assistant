@@ -22,13 +22,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.assistant.ui.theme.AssistantTheme
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("MainActivity", "Grate init MainActivity")
+        val batteryCheckRequest = PeriodicWorkRequestBuilder<BatteryCheckWorker>(15, TimeUnit.MINUTES)
+            .build()
 
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "batteryCheckWork",
+            ExistingPeriodicWorkPolicy.KEEP,
+            batteryCheckRequest
+        )
         setContent {
             AssistantTheme {
                 // A surface container using the 'background' color from the theme
